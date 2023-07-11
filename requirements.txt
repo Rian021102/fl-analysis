@@ -12,3 +12,5 @@ xgboost
 flask
 streamlit
 gdown
+matplotlib
+seaborn
