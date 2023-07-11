@@ -5,7 +5,7 @@ from trainingmodel import train
 
 def main():
     # Load data
-    path = '/Users/rianrachmanto/pypro/project/Litho-Fluid-Id/data/raw/dftest.csv'
+    path = '/Users/rianrachmanto/pypro/project/data/dftrain.csv'
     X,y = loaddata(path)
     print('data loaded')
 
