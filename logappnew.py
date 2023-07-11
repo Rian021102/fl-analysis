@@ -8,6 +8,7 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 from functools import lru_cache
 from sklearn.preprocessing import MinMaxScaler
 import os
+import base64
 
 @lru_cache(maxsize=1)
 def load_model():
@@ -77,6 +78,12 @@ def make_facies_log_plot(logs, facies_colors, facies_labels):
 
     st.pyplot(fig)  # Display the plot in Streamlit
 
+def get_download_link(file_path):
+    with open(file_path, "rb") as file:
+        contents = file.read()
+    b64 = base64.b64encode(contents).decode()
+    return f'<a href="data:file/csv;base64,{b64}" download="predictions.csv">Click here to download</a>'
+
 def main():
     st.title("Fluid Analysis Prediction Using Machine Learning")
     
@@ -104,12 +111,12 @@ def main():
         if st.button('Save Prediction'):
             predictions_df = predict(df)
             
-            # Get the path to the Downloads directory
-            downloads_path = os.path.join(os.path.expanduser("~"), "Downloads")
+            # Save the predictions to the temporary directory
+            predictions_path = "/tmp/predictions.csv"
+            predictions_df.to_csv(predictions_path, index=False)
             
-            # Save the predictions to the Downloads directory
-            predictions_df.to_csv(os.path.join(downloads_path, 'predictions.csv'), index=False)
-            st.write('Saved to predictions.csv')
+            # Provide download link to the user
+            st.markdown(f"Download [predictions.csv]({get_download_link(predictions_path)})")
             
 if __name__ == '__main__':
     main()
