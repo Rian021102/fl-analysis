@@ -7,10 +7,11 @@ import pickle
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from functools import lru_cache
 from sklearn.preprocessing import MinMaxScaler
+import os
 
 @lru_cache(maxsize=1)
 def load_model():
-    with open('/Users/rianrachmanto/pypro/project/Litho-Fluid-Id/models/model.pkl', 'rb') as f:
+    with open('models/model.pkl', 'rb') as f:
         return pickle.load(f)
 
 model = load_model()
@@ -22,7 +23,9 @@ def preprocess_data(df):
 
 def predict(df):
     predictions = model.predict(df)
+    labels = ['Non-SST', 'Gas', 'PosGas', 'Oil', 'PosOil', 'WTR', 'WtrRise']
     df['PREDICTION'] = predictions
+    df['LABEL'] = [labels[prediction] for prediction in predictions]
     return df
 
 def make_facies_log_plot(logs, facies_colors, facies_labels):
@@ -97,11 +100,16 @@ def main():
             
             make_facies_log_plot(predictions_df, facies_colors, facies_labels)
 
-        #add save button to save the prediction to csv
-    if st.button('Save Prediction'):
-        predictions_df = predict(df)
-        predictions_df.to_csv('/Users/rianrachmanto/pypro/project/Litho-Fluid-Id/data/processed/predictions.csv', index=False)
-        st.write('Saved to predictions.csv')
+        # Add save button to save the prediction to a CSV file
+        if st.button('Save Prediction'):
+            predictions_df = predict(df)
+            
+            # Get the path to the Downloads directory
+            downloads_path = os.path.join(os.path.expanduser("~"), "Downloads")
+            
+            # Save the predictions to the Downloads directory
+            predictions_df.to_csv(os.path.join(downloads_path, 'predictions.csv'), index=False)
+            st.write('Saved to predictions.csv')
             
 if __name__ == '__main__':
     main()

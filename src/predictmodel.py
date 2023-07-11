@@ -4,12 +4,6 @@ import pickle
 dftest = pd.read_csv('/Users/rianrachmanto/pypro/project/Litho-Fluid-Id/data/raw/dftest.csv')
 print(dftest.head())
 
-# Fill NaN values in FLUID with corresponding LITHO value
-dftest['FLUID'] = dftest['FLUID'].fillna(0) 
-
-# Rename values in FLUID column
-dftest['FLUID'] = dftest['FLUID'].map({0: 0, 7: 1, 8: 2, 9:3, 10: 4, 11: 5, 12: 6 })
-
 # Drop missing values
 dftest.dropna(inplace=True)
 
