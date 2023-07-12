@@ -1,17 +1,19 @@
 import pandas as pd
 import numpy as np
 import pickle
-dftest = pd.read_csv('/Users/rianrachmanto/pypro/project/Litho-Fluid-Id/data/raw/dftest.csv')
-print(dftest.head())
+import lasio
 
-# Drop missing values
-dftest.dropna(inplace=True)
+# Load LAS file
+las = lasio.read('/Users/rianrachmanto/pypro/project/data/S-15BP1_Petrophysical Log.las')
 
-# Reset index
-dftest.reset_index(drop=True, inplace=True)
+# Convert to DataFrame
+dftest = las.df()
+
+# Reset index and move 'DEPTH' to a regular column
+dftest.reset_index(inplace=True)
 
 # Create dfpred DataFrame without 'LITHO', 'Wells', and 'FLUID' columns
-dfpred = dftest.drop(['LITHO', 'Wells', 'FLUID'], axis=1)
+dfpred = dftest.copy()
 
 # Load model
 model = pickle.load(open('/Users/rianrachmanto/pypro/project/Litho-Fluid-Id/models/model.pkl', 'rb'))

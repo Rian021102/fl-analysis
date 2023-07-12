@@ -8,20 +8,15 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 from functools import lru_cache
 import base64
 import os
+import lasio
+import tempfile
 
 @lru_cache(maxsize=1)
-def load_model():
-    with open('models/model.pkl', 'rb') as f:
+def load_model(model_path):
+    with open(model_path, 'rb') as f:
         return pickle.load(f)
 
-model = load_model()
-
-def preprocess_data(df):
-    df.dropna(inplace=True)
-    df.drop(['Wells', 'LITHO', 'FLUID'], axis=1, inplace=True)  # Remove 'FLUID'
-    return df
-
-def predict(df):
+def predict(df, model):
     predictions = model.predict(df)
     labels = ['Non-SST', 'Gas', 'PosGas', 'Oil', 'PosOil', 'WTR', 'WtrRise']
     df['PREDICTION'] = predictions
@@ -82,19 +77,31 @@ def main():
     
     facies_labels = ['Non-SST', 'Gas', 'PosGas', 'Oil', 'PosOil', 'WTR', 'WtrRise']
 
-    #setting facies colors as follows:[dark grey, maroon, red, dark green, light green, dark blue, light blue]
+    # Setting facies colors as follows: [dark grey, maroon, red, dark green, light green, dark blue, light blue]
     facies_colors = ['#000000', '#990000', '#CC3333', '#006600', '#00CC00', '#000099', '#0000CC']
     
     uploaded_file = st.file_uploader("Choose a file")
     if uploaded_file is not None:
-        df = pd.read_csv(uploaded_file)
+        # Save the uploaded file to a temporary file
+        temp_file = tempfile.NamedTemporaryFile(delete=False)
+        temp_file.write(uploaded_file.read())
+        temp_file.close()
+        
+        # Use the temporary file path with lasio
+        las = lasio.read(temp_file.name)
+        df = las.df()
+
+        #reset index
+        df.reset_index(inplace=True)
+        
         st.subheader("Original Data")
         st.write(df)
         
-        df_scaled = preprocess_data(df)  # Added preprocessing step
+        model_path = 'models/model.pkl'
+        model = load_model(model_path)
 
         if st.button('Predict'):
-            predictions_df = predict(df)
+            predictions_df = predict(df, model)
             st.subheader("Predictions")
             st.write(predictions_df)
             
@@ -102,7 +109,7 @@ def main():
 
         # Add save button to save the prediction to a CSV file
         if st.button('Save Prediction'):
-            predictions_df = predict(df)
+            predictions_df = predict(df, model)
             
             # Save the predictions to a temporary DataFrame
             temp_df = predictions_df[['PREDICTION', 'LABEL']]
