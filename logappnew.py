@@ -17,6 +17,7 @@ def load_model(model_path):
         return pickle.load(f)
 
 def predict(df, model):
+    df.drop(['VCALCITE','VQUARTZ','VSH','VCOAL','VORGSH','VGAS','VOIL','VWATER','PHIT','PHIE','SWE','PERM'], axis=1, inplace=True)
     predictions = model.predict(df)
     labels = ['Non-SST', 'Gas', 'PosGas', 'Oil', 'PosOil', 'WTR', 'WtrRise']
     df['PREDICTION'] = predictions
