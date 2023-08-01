@@ -1,0 +1,13 @@
+version: '3.9'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: rian021102/fluid-analysis-prediction-streamlit
+    container_name: api_backend
+    ports:
+      - '8080:8080'
+    volumes:
+      - './streamlit:/app/streamlit'

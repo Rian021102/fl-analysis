@@ -7,8 +7,8 @@ from sklearn.ensemble import IsolationForest
 
     
 def cleandata(X_train, y_train, X_test,y_test):
-    X_train.drop(['Wells', 'LITHO'], axis=1, inplace=True)
-    X_test.drop(['Wells', 'LITHO'], axis=1, inplace=True)
+    X_train.drop(['Wells', 'LITHO','VCALCITE','VQUARTZ','VSH','VCOAL','VORGSH','VGAS','VOIL','VWATER','PHIT','PHIE','SWE','PERM'], axis=1, inplace=True)
+    X_test.drop(['Wells', 'LITHO','VCALCITE','VQUARTZ','VSH','VCOAL','VORGSH','VGAS','VOIL','VWATER','PHIT','PHIE','SWE','PERM'], axis=1, inplace=True)
 
     # Drop rows with NaN values
     X_train.dropna(inplace=True)
