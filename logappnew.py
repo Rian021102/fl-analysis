@@ -113,7 +113,7 @@ def main():
             predictions_df = predict(df, model)
             
             # Save the predictions to a temporary DataFrame
-            temp_df = predictions_df[['PREDICTION', 'LABEL']]
+            temp_df = predictions_df[['DEPTH','TVDSS','PREDICTION', 'LABEL']]
             
             # Provide download link to the user
             csv = temp_df.to_csv(index=False)
