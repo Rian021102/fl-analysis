@@ -5,7 +5,7 @@ from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from xgboost import XGBClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score,classification_report
 
-def model_based(X_train_sm, y_train_sm, X_test, y_test):
+def model_based(X_train, y_train, X_test, y_test):
     
     #build models
     models=['Random Forest', RandomForestClassifier(), 'Gradient Boosting', GradientBoostingClassifier(),
@@ -13,7 +13,7 @@ def model_based(X_train_sm, y_train_sm, X_test, y_test):
     
     for i in range(0, len(models), 2):
         model = models[i+1]
-        model.fit(X_train_sm, y_train_sm)
+        model.fit(X_train, y_train)
         y_pred = model.predict(X_test)
         print(models[i])
         print('Accuracy of {} classifier on test set: {:.2f}'.format(models[i], model.score(X_test, y_test)))

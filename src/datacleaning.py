@@ -7,8 +7,13 @@ from sklearn.ensemble import IsolationForest
 
     
 def cleandata(X_train, y_train, X_test,y_test):
-    X_train.drop(['Wells', 'LITHO','VCALCITE','VQUARTZ','VSH','VCOAL','VORGSH','VGAS','VOIL','VWATER','PHIT','PHIE','SWE','PERM'], axis=1, inplace=True)
-    X_test.drop(['Wells', 'LITHO','VCALCITE','VQUARTZ','VSH','VCOAL','VORGSH','VGAS','VOIL','VWATER','PHIT','PHIE','SWE','PERM'], axis=1, inplace=True)
+    X_train.drop(['LITHO'], axis=1, inplace=True)
+    X_test.drop(['LITHO'], axis=1, inplace=True)
+
+    #drop all negative values
+    X_train = X_train[X_train >= 0]
+    #align y_train with X_train
+    y_train = y_train.loc[X_train.index]
 
     # Drop rows with NaN values
     X_train.dropna(inplace=True)
@@ -27,12 +32,8 @@ def cleandata(X_train, y_train, X_test,y_test):
     y_train = y_train.loc[mask]
 
 
-    # SMOTE
-    sm = SMOTE(random_state=42)
-    X_train_sm, y_train_sm = sm.fit_resample(X_train, y_train)
-
     # Print the shape of the training sets
-    print(X_train_sm.shape)
-    print(y_train_sm.shape)
+    print(X_train.shape)
+    print(y_train.shape)
 
-    return X_train_sm, y_train_sm, X_test, y_test
+    return X_train, y_train, X_test, y_test

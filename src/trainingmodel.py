@@ -21,11 +21,11 @@ PARAM_GRID = [
     }
 ]
 
-def train(X_train_sm, y_train_sm, X_test, y_test):
+def train(X_train, y_train, X_test, y_test):
     # GridSearchCV
     pipe = Pipeline([('classifier', XGBClassifier())])
     clf = RandomizedSearchCV(pipe, PARAM_GRID, cv=5, verbose=0, n_jobs=4)
-    best_clf = clf.fit(X_train_sm, y_train_sm)
+    best_clf = clf.fit(X_train, y_train)
 
     # Predict
     y_pred = best_clf.predict(X_test)
