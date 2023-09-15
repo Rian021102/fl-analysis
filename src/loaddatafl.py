@@ -23,6 +23,12 @@ def loaddata(pathfile):
     # reset index
     df.reset_index(drop=True, inplace=True)
 
+    #exclude where RT is -999.000000, RHOB is -999.000000, NPHI is -9.990000
+    df = df[df['RT'] != -999.000000]
+    df = df[df['RHOB'] != -999.000000]
+    df = df[df['NPHI'] != -9.990000]
+    
+
     # print the first 5 rows
     print(df.head())
 

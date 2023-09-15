@@ -46,6 +46,9 @@ sa35petdf=sa35pet.df()
 sa41petdf=sa41pet.df()
 sa44hzpetdf=sa44hzpet.df()
 
+#check sample from dataframe
+print(sa5petdf.head())
+
 sa5fldf=sa5fl.df()
 sa10fldf=sa10fl.df()
 sa15fldf=sa15fl.df()
@@ -59,6 +62,9 @@ sa32rd1fldf=sa32rd1fl.df()
 sa35fldf=sa35fl.df()
 sa41fldf=sa41fl.df()
 sa44hzfldf=sa44hzfl.df()
+
+#check sample from dataframe
+print(sa5fldf.head())
 
 #merge petrophysics and lithofluid
 sa5df=pd.merge(sa5petdf,sa5fldf,on='DEPTH')
@@ -77,6 +83,7 @@ sa44hzdf=pd.merge(sa44hzpetdf,sa44hzfldf,on='DEPTH')
 
 #concat all well
 well=pd.concat([sa5df,sa10df,sa15df,sa15rd3df,sa21df,sa24df,sa25df,sa25bpdf,sa32df,sa32rd1df,sa35df,sa41df,sa44hzdf])
+well.reset_index(inplace=True)
 print(well.head())
 
 #export to csv
