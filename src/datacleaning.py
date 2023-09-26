@@ -9,8 +9,8 @@ from sklearn.ensemble import IsolationForest
 
     
 def cleandata(X_train, y_train, X_test,y_test):
-    X_train.drop(['LITHO','DT'], axis=1, inplace=True)
-    X_test.drop(['LITHO','DT'], axis=1, inplace=True)
+    X_train.drop(['LITHO'], axis=1, inplace=True)
+    X_test.drop(['LITHO'], axis=1, inplace=True)
 
     #filter RHOB and NPHI where is not negative
     X_train = X_train[(X_train['RHOB'] > 0) & (X_train['NPHI'] > 0)]

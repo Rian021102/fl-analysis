@@ -6,7 +6,7 @@ from modelling import model_based
 
 def main():
     # Load data
-    path = '/Users/rianrachmanto/pypro/project/Litho-Fluid-Id/data/raw/new_train.csv'
+    path = '/Users/rianrachmanto/pypro/project/Litho-Fluid-Id/data/raw/combined.csv'
     X,y = loaddata(path)
     print('data loaded')
 

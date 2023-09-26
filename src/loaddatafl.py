@@ -14,8 +14,8 @@ def loaddata(pathfile):
     # a log message indicating that data loading is complete
     logging.info('Data loaded')
 
-    #fill missing values in FLUID column with 0
-    df['FLUID']=df['FLUID'].fillna(0)
+   #fillna fluid with 0
+    df['FLUID'].fillna(0, inplace=True)
 
     # Rename values in FLUID column
     df['FLUID'] = df['FLUID'].map({0: 0, 7: 1, 8: 2, 9:3, 10: 4, 11: 5, 12: 6 })
