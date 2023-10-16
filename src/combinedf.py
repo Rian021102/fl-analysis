@@ -7,9 +7,11 @@ print(df2_new.head())
 dfold=pd.read_csv('/Users/rianrachmanto/pypro/project/Litho-Fluid-Id/data/raw/new_train.csv')
 dfold.drop(['DT'],axis=1,inplace=True)
 print(dfold.head())
-
+sdd=pd.read_csv('/Users/rianrachmanto/pypro/project/Litho-Fluid-Id/data/raw/sdd_train.csv')
+sdd.drop(['DT'],axis=1,inplace=True)
+print(sdd.head())
 #merge df2_new and dfold
-df=pd.concat([df2_new,dfold])
+df=pd.concat([df2_new,dfold,sdd])
 print(df.head())
 
 #export to csv
