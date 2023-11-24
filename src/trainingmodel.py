@@ -1,9 +1,14 @@
+import numpy as np
 from xgboost import XGBClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.pipeline import Pipeline
 from sklearn.metrics import classification_report
+#import compute class_weight
+from sklearn.utils.class_weight import compute_sample_weight
 import pickle
+
+#compute class_weight
 
 PARAM_GRID = [
     {   
@@ -17,15 +22,18 @@ PARAM_GRID = [
         'classifier__colsample_bytree': [0.5, 0.6, 0.7, 0.8, 0.9, 1],
         'classifier__colsample_bylevel': [0.5, 0.6, 0.7, 0.8, 0.9, 1],
         'classifier__reg_lambda': [0.01, 0.1, 1.0],
-        'classifier__reg_alpha': [0, 0.1, 1.0]
+        'classifier__reg_alpha': [0, 0.1, 1.0],
     }
 ]
 
 def train(X_train, y_train, X_test, y_test):
+    # Compute class weight
+    sample_weights=compute_sample_weight(class_weight='balanced', y=y_train)
+
     # GridSearchCV
     pipe = Pipeline([('classifier', XGBClassifier())])
-    clf = RandomizedSearchCV(pipe, PARAM_GRID, cv=5, verbose=0, n_jobs=4)
-    best_clf = clf.fit(X_train, y_train)
+    clf = RandomizedSearchCV(pipe, PARAM_GRID, cv=5, verbose=2, n_jobs=4)
+    best_clf = clf.fit(X_train, y_train, classifier__sample_weight=sample_weights)
 
     # Predict
     y_pred = best_clf.predict(X_test)
