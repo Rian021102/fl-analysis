@@ -18,10 +18,6 @@ def cleandata(X_train, y_train, X_test,y_test):
     #allign y_train with X_train
     y_train = y_train.loc[X_train.index]
 
-    
-
-
-
     # Drop rows with NaN values
     X_train.dropna(inplace=True)
     #align y_train with X_train
@@ -30,18 +26,15 @@ def cleandata(X_train, y_train, X_test,y_test):
     X_test.dropna(inplace=True)
     #align y_test with X_test
     y_test = y_test.loc[X_test.index]
-
-
-
    
-    # Remove outliers
-    iso = IsolationForest(contamination=0.05)
-    yhat = iso.fit_predict(X_train)
-    mask = yhat != -1
-    X_train = X_train.loc[mask, :]
-    y_train = y_train.loc[mask]
-
-
+    # Remove outliers using IQR
+    Q1 = X_train.quantile(0.25)
+    Q3 = X_train.quantile(0.75)
+    IQR = Q3 - Q1
+    X_train = X_train[~((X_train < (Q1 - 1.5 * IQR)) |(X_train > (Q3 + 1.5 * IQR))).any(axis=1)]
+    #align y_train with X_train
+    y_train = y_train.loc[X_train.index]
+    
 
     # Print the shape of the training sets
     print(X_train.shape)

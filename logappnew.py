@@ -93,14 +93,19 @@ def main():
         # Use the temporary file path with lasio
         las = lasio.read(temp_file.name)
         df = las.df()
-
+        #exclude where RT is -999.000000, RHOB is -999.000000, NPHI is -9.990000
+        df = df[df['RT'] != -999.000000]
+        df = df[df['RHOB'] != -999.000000]
+        df = df[df['NPHI'] != -9.990000]
+        #dropna
+        df.dropna(inplace=True)
         #reset index
         df.reset_index(inplace=True)
         
         st.subheader("Original Data")
         st.write(df)
         
-        model_path = 'models/model.pkl'
+        model_path = '/Users/rianrachmanto/pypro/project/Litho-Fluid-Id/models/model.pkl'
         model = load_model(model_path)
 
         if st.button('Predict'):

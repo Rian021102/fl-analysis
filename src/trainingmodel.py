@@ -7,8 +7,12 @@ from sklearn.metrics import classification_report
 #import compute class_weight
 from sklearn.utils.class_weight import compute_sample_weight
 import pickle
-
-#compute class_weight
+#import plot_roc_curve
+from sklearn.metrics import roc_curve
+import seaborn as sns
+import matplotlib.pyplot as plt
+#import confusion matrix
+from sklearn.metrics import confusion_matrix
 
 PARAM_GRID = [
     {   
@@ -16,24 +20,17 @@ PARAM_GRID = [
         'classifier__eta': [0.01, 0.1, 0.3, 0.5, 0.7, 1],
         'classifier__min_child_weight': [1, 5, 10],
         'classifier__max_depth': [3, 4, 5, 6, 7, 8, 9, 10],
-        'classifier__gamma': [0, 0.25, 0.5, 1.0],
-        'classifier__max_delta_step': [0, 0.25, 0.5, 1.0],
-        'classifier__subsample': [0.5, 0.6, 0.7, 0.8, 0.9, 1],
-        'classifier__colsample_bytree': [0.5, 0.6, 0.7, 0.8, 0.9, 1],
-        'classifier__colsample_bylevel': [0.5, 0.6, 0.7, 0.8, 0.9, 1],
-        'classifier__reg_lambda': [0.01, 0.1, 1.0],
-        'classifier__reg_alpha': [0, 0.1, 1.0],
-    }
+        }
 ]
 
 def train(X_train, y_train, X_test, y_test):
     # Compute class weight
-    sample_weights=compute_sample_weight(class_weight='balanced', y=y_train)
+    #sample_weights=compute_sample_weight(class_weight='balanced', y=y_train)
 
     # GridSearchCV
     pipe = Pipeline([('classifier', XGBClassifier())])
     clf = RandomizedSearchCV(pipe, PARAM_GRID, cv=5, verbose=2, n_jobs=4)
-    best_clf = clf.fit(X_train, y_train, classifier__sample_weight=sample_weights)
+    best_clf = clf.fit(X_train, y_train)
 
     # Predict
     y_pred = best_clf.predict(X_test)
@@ -51,8 +48,10 @@ def train(X_train, y_train, X_test, y_test):
     print(f'Recall: {recall}')
     print(f'F1: {f1}')
     print(f'Classification Report: {classificationreport}')
-
-
+    #print confusion matrix
+    cm = confusion_matrix(y_test, y_pred)
+    print(cm)
+ 
     # Save trained model
     with open('/Users/rianrachmanto/pypro/project/Litho-Fluid-Id/models/model.pkl', 'wb') as f:
         pickle.dump(best_clf, f)

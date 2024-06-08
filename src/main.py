@@ -3,6 +3,7 @@ from edafl import eda
 from datacleaning import cleandata
 from trainingmodel import train
 from modelling import model_based
+from train_new import train_mod
 
 def main():
     # Load data
@@ -17,11 +18,7 @@ def main():
     X_train, y_train, X_test,y_test = cleandata(X_train, y_train, X_test, y_test)
     print('data cleaned')
 
-    # Training Model
     train(X_train, y_train, X_test, y_test)
-    print('model trained')
-   
-        
 
 if __name__ == '__main__':
     main()
