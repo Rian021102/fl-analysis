@@ -2,14 +2,9 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.model_selection import train_test_split
 
-def eda(X, y):
-    #split data into training and test sets
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=123)
-    #print the shape of the training sets
-    print('X_train Shape: ',X_train.shape)
-    print('y_train Shape: ',y_train.shape)    
+def eda(X_train, y_train):
+    
     
     #print missing values in training set
 
@@ -34,8 +29,6 @@ def eda(X, y):
     #print values counts for y_train
     print(y_train.value_counts())
 
-    
-    return X_train, X_test, y_train, y_test
 
 
 

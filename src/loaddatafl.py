@@ -48,5 +48,10 @@ def loaddata(pathfile):
     # print X and y shape
     print(X.shape)
     print(y.shape)
+    #split data into training and test sets
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=123)
+    #print the shape of the training sets
+    print('X_train Shape: ',X_train.shape)
+    print('y_train Shape: ',y_train.shape)    
 
-    return X, y
+    return X_train, y_train, X_test, y_test
