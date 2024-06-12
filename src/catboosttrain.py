@@ -16,8 +16,6 @@ def train_my_cat(X_train, y_train, X_test, y_test):
                                loss_function='MultiClass')
     # Fit the model
     model.fit(X_train, y_train)
-    # Save the model
-    pickle.dump(model, open('model.pkl', 'wb'))
     # Predict the model
     y_pred = model.predict(X_test)
     # Calculate the accuracy
@@ -34,6 +32,9 @@ def train_my_cat(X_train, y_train, X_test, y_test):
     print(f'F1: {f1}')
     # Classification report
     print(classification_report(y_test, y_pred))
+    # Save the model
+    with open('/Users/rianrachmanto/pypro/project/Litho-Fluid-Id/models/model_cat.pkl', 'wb') as f:
+        pickle.dump(model, f)
     # Confusion matrix
     cm = confusion_matrix(y_test, y_pred)
     sns.heatmap(cm, annot=True)
