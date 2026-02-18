@@ -20,7 +20,7 @@ def predict(df, model):
     #drop columns
     df2=df.copy()
     df2=df2[['DEPTH','GR','RT','RHOB','NPHI']]
-    predictions = model.predict(df2)
+    predictions = model.predict(df2).astype(int)  # Ensure predictions are integers
     labels = ['Non-SST', 'Gas', 'PosGas', 'Oil', 'PosOil', 'WTR', 'WtrRise']
     df['PREDICTION'] = predictions
     df['LABEL'] = [labels[prediction] for prediction in predictions]
@@ -79,7 +79,7 @@ def main():
     st.title("Fluid Analysis Prediction Using Machine Learning")
     
     facies_labels = ['Non-SST', 'Gas', 'PosGas', 'Oil', 'PosOil', 'WTR', 'WtrRise']
-
+    
     # Setting facies colors as follows: [dark grey, maroon, red, dark green, light green, dark blue, light blue]
     facies_colors = ['#000000', '#990000', '#CC3333', '#006600', '#00CC00', '#000099', '#0000CC']
     
@@ -101,15 +101,24 @@ def main():
         st.subheader("Original Data")
         st.write(df)
         
-        model_path = '/Users/rianrachmanto/pypro/project/Litho-Fluid-Id/models/model_cat.pkl'
+        model_path = r'P:/project/pythonpro/myvenv/fl-analysis/models/model.pkl'
         model = load_model(model_path)
 
         if st.button('Predict'):
             predictions_df = predict(df, model)
             st.subheader("Predictions")
             st.write(predictions_df)
+            prediction_edit=predictions_df.copy()
+            #select all columns with numeric values
+            num_cols = prediction_edit.select_dtypes(include=['float64', 'int64']).columns
+            if not num_cols.empty:
+                # Remove all negative values
+                prediction_edit = prediction_edit[(prediction_edit[num_cols] >= 0).all(axis=1)]
+            else:
+                st.warning("No numeric columns found to filter negative values.")
+
             
-            make_facies_log_plot(predictions_df, facies_colors, facies_labels)
+            make_facies_log_plot(prediction_edit, facies_colors, facies_labels)
 
         # Add save button to save the prediction to a CSV file
         if st.button('Save Prediction'):

@@ -33,7 +33,7 @@ def train_my_cat(X_train, y_train, X_test, y_test):
     # Classification report
     print(classification_report(y_test, y_pred))
     # Save the model
-    with open('/Users/rianrachmanto/pypro/project/Litho-Fluid-Id/models/model_cat.pkl', 'wb') as f:
+    with open('P:\\project\\pythonpro\\myvenv\\fl-analysis\\models\\model_cat.pkl', 'wb') as f:
         pickle.dump(model, f)
     # Confusion matrix
     cm = confusion_matrix(y_test, y_pred)

@@ -53,7 +53,7 @@ def train(X_train, y_train, X_test, y_test):
     print(cm)
  
     # Save trained model
-    with open('/Users/rianrachmanto/pypro/project/Litho-Fluid-Id/models/model.pkl', 'wb') as f:
+    with open('P:/project/pythonpro/myvenv/fl-analysis/models/model.pkl', 'wb') as f:
         pickle.dump(best_clf, f)
 
     return {

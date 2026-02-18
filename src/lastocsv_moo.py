@@ -23,12 +23,22 @@ def load_las_to_df(directory, suffix_strip=None, rename_cols=False):
     return df_dict
 
 # Directories
-path_petrophysical = '/Users/rianrachmanto/pypro/project/Litho-Fluid-Id/data/raw/Petrophysical'
-path_lithofluid = '/Users/rianrachmanto/pypro/project/Litho-Fluid-Id/data/raw/Litho-Fluid'
+path_petrophysical = 'P:/project/pythonpro/myvenv/fl-analysis/data/raw/OH Log'
+path_lithofluid = 'P:/project/pythonpro/myvenv/fl-analysis/data/raw/Litho-Fluid'
 
 # Load LAS files into dataframes
+if not os.path.exists(path_petrophysical):
+    raise FileNotFoundError(f"Directory not found: {path_petrophysical}")
+if not os.path.exists(path_lithofluid):
+    raise FileNotFoundError(f"Directory not found: {path_lithofluid}")
+
 petro_df_dict = load_las_to_df(path_petrophysical)
 litho_df_dict = load_las_to_df(path_lithofluid, '_Litho-Fluid', rename_cols=True)  # Pass rename_cols=True only for this directory
+
+if not petro_df_dict:
+    raise ValueError(f"No .las files found in directory: {path_petrophysical}")
+if not litho_df_dict:
+    raise ValueError(f"No .las files found in directory: {path_lithofluid}")
 
 # List to hold all merged dataframes
 all_merged_dfs = []
@@ -48,5 +58,5 @@ final_df = pd.concat(all_merged_dfs, ignore_index=True)
 print("All dataframes concatenated.")
 
 # Save to CSV
-final_df.to_csv('/Users/rianrachmanto/pypro/project/Litho-Fluid-Id/data/raw/new_test_moo.csv', index=False)
-print("Data saved to new_test_moo.csv")
+final_df.to_csv('P:/project/pythonpro/myvenv/fl-analysis/data/raw/new_test_suntan.csv', index=False)
+print("Data saved to new_test_suntan.csv")

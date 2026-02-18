@@ -28,30 +28,9 @@ def loaddata(pathfile):
     df = df[df['RHOB'] != -999.000000]
     df = df[df['NPHI'] != -9.990000]
     
-
-    # print the first 5 rows
-    print(df.head())
-
-    # print the last 5 rows
-    print(df.tail())
-
-    # print the shape of the data
-    print(df.shape)
-
-    # print the data types
-    print(df.dtypes)
-
     # set X and y
     X = df.drop('FLUID', axis=1)
     y = df['FLUID']
-
-    # print X and y shape
-    print(X.shape)
-    print(y.shape)
-    #split data into training and test sets
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=123)
-    #print the shape of the training sets
-    print('X_train Shape: ',X_train.shape)
-    print('y_train Shape: ',y_train.shape)    
-
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
+    
     return X_train, y_train, X_test, y_test
