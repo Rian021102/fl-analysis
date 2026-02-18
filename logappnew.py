@@ -101,7 +101,11 @@ def main():
         st.subheader("Original Data")
         st.write(df)
         
+<<<<<<< HEAD
         model_path = r'P:/project/pythonpro/myvenv/fl-analysis/models/model.pkl'
+=======
+        model_path = '/Users/rianrachmanto/pypro/project/Litho-Fluid-Id/models/model.pkl'
+>>>>>>> 40e742ab7021690a36b4f4aebe620a336acb81d5
         model = load_model(model_path)
 
         if st.button('Predict'):
