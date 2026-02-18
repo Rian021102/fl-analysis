@@ -5,6 +5,11 @@ from trainingmodel import train
 from modelling import model_based
 from train_new import train_mod
 from catboosttrain import train_my_cat
+#importing confusion matrix
+from sklearn.metrics import confusion_matrix
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
 def main():
     # Load data
     path = '/Users/rianrachmanto/pypro/project/Litho-Fluid-Id/data/raw/combined.csv'
@@ -12,7 +17,7 @@ def main():
     print('data loaded')
 
     # Exploratory Data Analysis
-    #eda(X_train, y_train)
+    eda(X_train, y_train)
 
     # Data Cleaning
     X_train, y_train, X_test,y_test = cleandata(X_train, y_train, X_test, y_test)
@@ -20,9 +25,9 @@ def main():
 
     #train(X_train, y_train, X_test, y_test)
     # Model
-    model=train_my_cat(X_train, y_train, X_test, y_test)
+    # model=train_my_cat(X_train, y_train, X_test, y_test)
     #model_based(X_train, y_train, X_test, y_test)
-   #train_mod(X_train, y_train, X_test, y_test)
+    train_mod(X_train, y_train, X_test, y_test)
     
 
 if __name__ == '__main__':

@@ -101,7 +101,7 @@ def main():
         st.subheader("Original Data")
         st.write(df)
         
-        model_path = '/Users/rianrachmanto/pypro/project/Litho-Fluid-Id/models/model_cat.pkl'
+        model_path = '/Users/rianrachmanto/pypro/project/Litho-Fluid-Id/models/model.pkl'
         model = load_model(model_path)
 
         if st.button('Predict'):
