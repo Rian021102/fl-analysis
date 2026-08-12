@@ -1,6 +1,5 @@
 import logging
 from pathlib import Path
-
 import joblib
 import matplotlib.pyplot as plt
 import numpy as np
@@ -27,6 +26,7 @@ INVALID_VALUES = {
     'NPHI': -9.99,
 }
 DEFAULT_MODEL_PATH = Path("models/model_cat.pkl")
+DEFAULT_PLOT_PATH = Path("reports/model_evaluation.png")
 
 
 def load_and_preprocess_data(path: str | Path, test_size: float = 0.2, random_state: int = 0):
@@ -36,7 +36,14 @@ def load_and_preprocess_data(path: str | Path, test_size: float = 0.2, random_st
     df = pd.read_csv(path)
 
     # 1. Fill missing FLUID values and map categories safely
-    df['FLUID'] = df['FLUID'].fillna(0).map(FLUID_MAP).astype(int)
+    fluid_codes = df['FLUID'].fillna(0)
+    unmapped = set(fluid_codes.unique()) - set(FLUID_MAP)
+    if unmapped:
+        raise ValueError(
+            f"Unrecognized FLUID codes {sorted(unmapped)} in {path}; "
+            f"expected one of {sorted(FLUID_MAP)}"
+        )
+    df['FLUID'] = fluid_codes.map(FLUID_MAP).astype(int)
 
     # 2. Vectorized filtering of null/sentinel values (-999, -9.99)
     valid_mask = pd.Series(True, index=df.index)
@@ -44,6 +51,12 @@ def load_and_preprocess_data(path: str | Path, test_size: float = 0.2, random_st
         if col in df.columns:
             valid_mask &= df[col] != sentinel
 
+    # RT must be strictly positive: log(0) is -inf and log(<0) is NaN, and -inf
+    # survives the dropna() in clean_data and would reach the model.
+    valid_mask &= df['RT'] > 0
+
+    dropped = len(df) - int(valid_mask.sum())
+    logger.info(f"Dropped {dropped} of {len(df)} rows with sentinel or non-positive values")
     df = df[valid_mask].reset_index(drop=True)
 
     # 3. Log-transform resistivity and drop original RT column
@@ -55,23 +68,26 @@ def load_and_preprocess_data(path: str | Path, test_size: float = 0.2, random_st
     y = df['FLUID']
 
     # 5. Train/Test Split (stratified to preserve fluid class distribution)
-    return train_test_split(
+    X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=test_size, random_state=random_state, stratify=y
     )
+    return X_train, y_train, X_test, y_test
 
 
 def clean_data(
     X_train: pd.DataFrame, y_train: pd.Series, X_test: pd.DataFrame, y_test: pd.Series
-):
-    """Cleans well-log train/test features by dropping unneeded columns, removing invalid/NaN values, 
-    and filtering training outliers using the Interquartile Range (IQR)."""
+    ):
+    """Cleans well-log train/test features by dropping unneeded columns, removing
+    physically invalid values, and filtering training outliers using the Interquartile
+    Range (IQR). Missing values are preserved - CatBoost handles NaN natively."""
     # 1. Drop unnecessary columns safely
     X_train = X_train.drop(columns=['LITHO'], errors='ignore')
     X_test = X_test.drop(columns=['LITHO'], errors='ignore')
 
-    # 2. Filter positive values and remove NaNs on Training Data
-    train_mask = (X_train['RHOB'] > 0) & (X_train['NPHI'] > 0)
-    X_train = X_train[train_mask].dropna()
+    # 2. Drop physically invalid readings on Training Data. Negated comparisons keep
+    #    NaN rows: `NaN > 0` is False, so the positive form would discard them too.
+    train_mask = ~(X_train['RHOB'] <= 0) & ~(X_train['NPHI'] <= 0)
+    X_train = X_train[train_mask]
 
     # 3. Apply IQR outlier filtering ONLY on Training Data
     Q1 = X_train.quantile(0.25)
@@ -86,8 +102,8 @@ def clean_data(
     # Align y_train with the finalized X_train index
     y_train = y_train.loc[X_train.index]
 
-    # 4. Clean Test Set (remove NaNs only - NO outlier filtering on test data)
-    X_test = X_test.dropna()
+    # 4. Test Set is left as-is - no outlier filtering and no NaN removal, so the
+    #    evaluation reflects every interval the model will see in production.
     y_test = y_test.loc[X_test.index]
 
     logger.info(f"Cleaned X_train shape: {X_train.shape}, y_train shape: {y_train.shape}")
@@ -102,10 +118,11 @@ def train_catboost(
     X_test: pd.DataFrame,
     y_test: pd.Series,
     model_path: Path | str = DEFAULT_MODEL_PATH,
+    plot_path: Path | str = DEFAULT_PLOT_PATH,
     **hyperparams,
 ) -> CatBoostClassifier:
-    """Trains a CatBoostClassifier, evaluates performance, plots confusion matrix 
-    and feature importances side-by-side, and saves the model artifact."""
+    """Trains a CatBoostClassifier, evaluates performance, saves the confusion matrix
+    and feature importances side-by-side as a PNG, and saves the model artifact."""
     # 1. Default model parameters
     default_params = {
         "iterations": 1000,
@@ -176,7 +193,12 @@ def train_catboost(
     axes[1].set_xlabel("Importance Score")
 
     plt.tight_layout()
-    plt.show()
+
+    figure_path = Path(plot_path)
+    figure_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(figure_path, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    logger.info(f"Evaluation plots saved to {figure_path.resolve()}")
 
     return model
 
@@ -184,7 +206,7 @@ def train_catboost(
 def main():
     logging.basicConfig(level=logging.INFO)
 
-    data_path = Path("P:/project/pythonpro/myvenv/fl-analysis/data/raw/combined_new.csv")
+    data_path = Path("/home/rian/python_project/myvenv/fl-analysis/data/raw/combined_new.csv")
     
     # 1. Load Data
     X_train, y_train, X_test, y_test = load_and_preprocess_data(data_path)
