@@ -1,5 +1,6 @@
 import pandas as pd
 import logging
+import numpy as np
 from sklearn.model_selection import train_test_split
 
 # initialize logging format and level
@@ -27,6 +28,11 @@ def loaddata(pathfile):
     df = df[df['RT'] != -999.000000]
     df = df[df['RHOB'] != -999.000000]
     df = df[df['NPHI'] != -9.990000]
+
+    #create log RT
+    df['LOG_RT']=np.log(df['RT'])
+    df=df.drop(columns=['RT'])
+
     
     # set X and y
     X = df.drop('FLUID', axis=1)
